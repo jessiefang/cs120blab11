@@ -117,6 +117,9 @@ int LCDTick(int state){
 				state = Display;
 			}
 			break;
+		case Display:
+			state = LCDStart;
+			break;
 		default:
 			state = LCDStart;
 			break;
@@ -172,7 +175,7 @@ int main(void) {
 			tasks[i]->state = tasks[i]->TickFct(tasks[i]->state);
 			tasks[i]->elapsedTime = 0;
 		}
-		tasks[i]->elapsedTime += 10;
+		tasks[i]->elapsedTime += 1;
 	}
 	while(!TimerFlag);
 	TimerFlag = 0;
