@@ -21,8 +21,10 @@
 
 enum States {Start, LCD};
 unsigned char pos = 0x00;
-unsigned char text[45]={'C','S','1','2','0','B',' ','i','s',' ','L','e','g','e','n','d','.','.','.','w','a','i','t',' ','f','o','r',' ','i','t',' ','D','A','R','Y','!',' ',' ',' ',' ',' ',' ',' ',' ',' '}
+unsigned char text[52]={' ',' ','C','S','1','2','0','B',' ','i','s',' ','L','e','g','e','n','d','.','.','.','w','a','i','t',' ','f','o','r',' ','i','t',' ','D','A','R','Y','!',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ', ' ',' ',' ', ' '};
 unsigned char display[16];
+unsigned char beg = 0;
+unsigned char end = 16;
 int Tick(int state){
 	switch(state){
 		case Start:
@@ -40,10 +42,10 @@ int Tick(int state){
 			break;
 		case LCD:
 			for (int i = 0; i < 16; i++){
-				display[i] = text[(i + pos)%45];
+				display[i] = text[(i + pos)%52];
 			}
 			LCD_DisplayString(1, display);
-			pos = ((pos + 1)%45);
+			pos = ((pos + 1)%52);
 			break;
 		default:
 			break;
@@ -53,12 +55,12 @@ int Tick(int state){
 
 int main(void) {
     /* Insert DDR and PORT initializations */
-    DDRA = 0xF0; PORTA = 0x0F;
+    DDRA = 0xFF; PORTA = 0x00;
     DDRB = 0xFF; PORTB = 0x00;
     DDRC = 0xFF; PORTC = 0x00;
     DDRD = 0xFF; PORTD = 0x00;
 
-     static task task1;
+    static task task1;
     task *tasks[] = { &task1 };
     const unsigned short numTasks = sizeof(tasks) / sizeof(task*);
     const char start = -1;
@@ -71,7 +73,7 @@ int main(void) {
     TimerSet(20);
     TimerOn();
     LCD_init();
-
+    LCD_DisplayString(1, "Hi");
 
     unsigned short i;
     /* Insert your solution below */
@@ -81,7 +83,7 @@ int main(void) {
 			tasks[i]->state = tasks[i]->TickFct(tasks[i]->state);
 			tasks[i]->elapsedTime = 0;
 		}
-		tasks[i]->elapsedTime += 50;
+		tasks[i]->elapsedTime += 1;
 	}
 	while(!TimerFlag);
 	TimerFlag = 0;
