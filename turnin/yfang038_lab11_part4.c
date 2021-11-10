@@ -105,11 +105,11 @@ int Tick(int state){
 }
 
 
-enum LCDStates {Start, LCD, Display};
+enum LCDStates {LCDStart, LCD, Display};
 unsigned char pos = 0x01;
 int LCDTick(int state){
 	switch(state){
-		case Start:
+		case LCDStart:
 			state = LCD;
 			break;
 		case LCD:
@@ -120,17 +120,17 @@ int LCDTick(int state){
 			}
 			break;
 		default:
-			state = Start;
+			state = LCDStart;
 			break;
 	}
 	switch(state){
-		case Start:
+		case LCDStart:
 			break;
 		case LCD:
 			LCD_Cursor(pos);
 			break;
 		case Display:
-			LCD_Writedata(input);
+			LCD_WriteData(input);
 			if(pos > 15){
 				pos = 0x01;
 			}else{
@@ -145,9 +145,9 @@ int LCDTick(int state){
 
 int main(void) {
     /* Insert DDR and PORT initializations */
-    DDRA = 0xF0; PORTA = 0x0F;
+    DDRA = 0xFF; PORTA = 0xFF;
     DDRB = 0xFF; PORTB = 0x00;
-    DDRC = 0xFF; PORTC = 0x00;
+    DDRC = 0xF0; PORTC = 0x0F;
     DDRD = 0xFF; PORTD = 0x00;
 
 
@@ -168,6 +168,7 @@ int main(void) {
 
     TimerSet(10);
     TimerOn();
+    LCD_init();
     LCD_DisplayString(1, "Congratulations!");
 
     unsigned short i;
@@ -178,7 +179,7 @@ int main(void) {
 			tasks[i]->state = tasks[i]->TickFct(tasks[i]->state);
 			tasks[i]->elapsedTime = 0;
 		}
-		tasks[i]->elapsedTime += 50;
+		tasks[i]->elapsedTime += 1;
 	}
 	while(!TimerFlag);
 	TimerFlag = 0;

@@ -1,7 +1,7 @@
 /*	Author: Yunjie Fang
  *  Partner(s) Name: 
  *	Lab Section:
- *	Assignment: Lab #11  Exercise #3
+ *	Assignment: Lab #11  Exercise #4
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -17,6 +17,7 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
+
 
 unsigned char keypad = 0x00;
 unsigned char input = 0x00;
@@ -105,6 +106,7 @@ int Tick(int state){
 
 
 enum LCDStates {LCDStart, LCD, Display};
+unsigned char pos = 0x01;
 int LCDTick(int state){
 	switch(state){
 		case LCDStart:
@@ -117,9 +119,6 @@ int LCDTick(int state){
 				state = Display;
 			}
 			break;
-		case Display:
-			state = LCDStart;
-			break;
 		default:
 			state = LCDStart;
 			break;
@@ -128,10 +127,15 @@ int LCDTick(int state){
 		case LCDStart:
 			break;
 		case LCD:
+			LCD_Cursor(pos);
 			break;
 		case Display:
-			LCD_Cursor(1);
 			LCD_WriteData(input);
+			if(pos > 15){
+				pos = 0x01;
+			}else{
+				pos++;
+			}
 			break;
 		default:
 			break;
@@ -141,7 +145,7 @@ int LCDTick(int state){
 
 int main(void) {
     /* Insert DDR and PORT initializations */
-    DDRA = 0xFF; PORTA = 0x00;
+    DDRA = 0xFF; PORTA = 0xFF;
     DDRB = 0xFF; PORTB = 0x00;
     DDRC = 0xF0; PORTC = 0x0F;
     DDRD = 0xFF; PORTD = 0x00;
@@ -165,7 +169,7 @@ int main(void) {
     TimerSet(10);
     TimerOn();
     LCD_init();
-
+    LCD_DisplayString(1, "Congratulations!");
 
     unsigned short i;
     /* Insert your solution below */
